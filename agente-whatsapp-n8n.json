@@ -1,0 +1,206 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "449106f0-10ef-42cc-a310-e19052030f9e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        -200
+      ],
+      "id": "cffa4696-cf1e-44b9-b16c-7798c9e88cf0",
+      "name": "Webhook",
+      "webhookId": "449106f0-10ef-42cc-a310-e19052030f9e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        20
+      ],
+      "id": "32a4a473-4a85-4d32-a4c9-3550e0d8a4bd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "LZDSYROZ95VZwwmU",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "gabrielproyect",
+        "remoteJid": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -160
+      ],
+      "id": "b3a0637a-0c80-4065-b942-dd09fc153804",
+      "name": "Enviar texto",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "evolutionApi": {
+          "id": "t8DhH0p066WZeTrt",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4-turbo-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        60
+      ],
+      "id": "b943f500-78b4-4d6f-a469-184404496d41",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Eh289LjpT7jt6L2O",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.data.message.conversation }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "Eres un asistente virtual super inteligente del equipo Gabriel Project y estás encargado de asistir en todo lo que necesiten a nuestros posibles clientes que te escribirán por WhatsApp."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        -240
+      ],
+      "id": "3f593600-bbb5-4a3e-a3ae-12c3e95d96b6",
+      "name": "AI Agent"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "headers": {
+          "host": "gabrielproyect-n8n.f3x4wa.easypanel.host",
+          "user-agent": "axios/1.10.0",
+          "content-length": "719",
+          "accept": "application/json, text/plain, */*",
+          "accept-encoding": "gzip, compress, deflate, br",
+          "content-type": "application/json",
+          "x-forwarded-for": "172.18.0.1",
+          "x-forwarded-host": "gabrielproyect-n8n.f3x4wa.easypanel.host",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "f9801db62f81",
+          "x-real-ip": "172.18.0.1"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "event": "messages.upsert",
+          "instance": "gabrielproyect",
+          "data": {
+            "key": {
+              "remoteJid": "34610839087@s.whatsapp.net",
+              "fromMe": true,
+              "id": "AC509F45F8CF7BAC5CA8E693DFF8D73E"
+            },
+            "pushName": "Gabriel",
+            "status": "SERVER_ACK",
+            "message": {
+              "conversation": "Hola esto es una prueba para YouTube"
+            },
+            "messageType": "conversation",
+            "messageTimestamp": 1759506146,
+            "instanceId": "0b32cbdd-034e-42f5-a9d6-73be15ff575c",
+            "source": "android"
+          },
+          "destination": "https://gabrielproyect-n8n.f3x4wa.easypanel.host/webhook-test/449106f0-10ef-42cc-a310-e19052030f9e",
+          "date_time": "2025-10-03T12:42:26.869Z",
+          "sender": "34610839087@s.whatsapp.net",
+          "server_url": "https://gabrielproyect-evolution-api.f3x4wa.easypanel.host",
+          "apikey": "A1ACD647B0B3-4F75-83F8-25EF8CE333CA"
+        },
+        "webhookUrl": "https://gabrielproyect-n8n.f3x4wa.easypanel.host/webhook-test/449106f0-10ef-42cc-a310-e19052030f9e",
+        "executionMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5569f045669d1a59b75146a6399717b37f1d487c4b3f5ace189db4633202626"
+  }
+}
